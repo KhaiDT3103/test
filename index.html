@@ -31,23 +31,26 @@
     <script>
         const DAILY_API_KEY = "45af23764bb0a0bc2862807b33cc3ec50364e87344baf73d02f38828a6e9ff7d";  // Thay bằng API Key của bạn
         const ROOM_CREATE_URL = "https://api.daily.co/v1/rooms";
+        let roomUrl = localStorage.getItem("daily_room_url");
+        async function createOrGetRoom() {
+            if (!roomUrl) {
+                const response = await fetch(ROOM_CREATE_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${DAILY_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        name: `room-${Math.floor(Math.random() * 10000)}`,
+                        properties: { enable_chat: true, enable_knocking: true }
+                    })
+                });
 
-        async function createRoom() {
-            const response = await fetch(ROOM_CREATE_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${DAILY_API_KEY}`
-                },
-                body: JSON.stringify({
-                    name: `room-${Math.floor(Math.random() * 10000)}`,
-                    properties: { enable_chat: true, enable_knocking: true }
-                })
-            });
-
-            const data = await response.json();
-            console.log("Phòng họp đã tạo:", data);
-            return data.url; // Trả về link phòng họp
+                const data = await response.json();
+                roomUrl = data.url;
+                localStorage.setItem("daily_room_url", roomUrl);
+            }
+            return roomUrl;
         }
 
         async function requestPermissions() {
@@ -68,14 +71,15 @@
             const hasPermission = await requestPermissions();
             if (!hasPermission) return;
 
-            const roomUrl = await createRoom();  // Tạo phòng họp mới
+            const roomUrl = await createOrGetRoom();
+            console.log("Tham gia phòng:", roomUrl);
 
             callFrame = window.DailyIframe.createFrame(document.getElementById("videoContainer"), {
                 showLeaveButton: true,
                 iframeStyle: { width: "100%", height: "500px", borderRadius: "10px" }
             });
 
-            callFrame.join({ url: roomUrl });  // Tham gia phòng vừa tạo
+            callFrame.join({ url: roomUrl });
         });
     </script>
 
