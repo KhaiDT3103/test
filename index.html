@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Call với Daily</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container text-center">
+        <h2 class="mb-4" style="color: white;">Nhóm 4 - Sáng thứ 4 - Demo Video Call With API</h2>
+
+        <!-- Nút tham gia cuộc gọi -->
+        <button id="joinBtn" class="btn btn-secondary btn-lg">Tham gia</button>
+
+        <!-- Video Container -->
+        <div class="card video-card mt-4 shadow-lg">
+            <div class="card-body">
+                <h5 class="card-title"></h5>
+                <div id="videoContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily API -->
+    <script src="https://unpkg.com/@daily-co/daily-js"></script>
+
+    <script>
+        const DAILY_API_KEY = "45af23764bb0a0bc2862807b33cc3ec50364e87344baf73d02f38828a6e9ff7d";  // Thay bằng API Key của bạn
+        const ROOM_CREATE_URL = "https://api.daily.co/v1/rooms";
+
+        async function createRoom() {
+            const response = await fetch(ROOM_CREATE_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${DAILY_API_KEY}`
+                },
+                body: JSON.stringify({
+                    name: `room-${Math.floor(Math.random() * 10000)}`,
+                    properties: { enable_chat: true, enable_knocking: true }
+                })
+            });
+
+            const data = await response.json();
+            console.log("Phòng họp đã tạo:", data);
+            return data.url; // Trả về link phòng họp
+        }
+
+        async function requestPermissions() {
+            try {
+                // Dùng getUserMedia để yêu cầu quyền camera và micro
+                await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                console.log("Đã cấp quyền camera & micro");
+                return true;
+            } catch (error) {
+                console.error("Quyền camera/micro bị từ chối:", error);
+                alert("Bạn cần cấp quyền camera và micro để tham gia cuộc gọi.");
+                return false;
+            }
+        }
+
+        let callFrame;
+        document.getElementById("joinBtn").addEventListener("click", async function () {
+            const hasPermission = await requestPermissions();
+            if (!hasPermission) return;
+
+            const roomUrl = await createRoom();  // Tạo phòng họp mới
+
+            callFrame = window.DailyIframe.createFrame(document.getElementById("videoContainer"), {
+                showLeaveButton: true,
+                iframeStyle: { width: "100%", height: "500px", borderRadius: "10px" }
+            });
+
+            callFrame.join({ url: roomUrl });  // Tham gia phòng vừa tạo
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+body {
+    background-color: #1F2D3D !important;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    text-align: center;
+}
+
+.video-card {
+    display: none;
+    max-width: 800px;
+    margin: auto;
+}
+
+.card-body {
+    background-color: #5C636A !important;
+}
+
+.card {
+    background-color: transparent;
+}
+
+footer {
+    position: fixed;
+    bottom: 10px;
+    /* Khoảng cách so với đáy */
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: 100%;
+    color: white;
+    /* Màu chữ (có thể đổi tùy thích) */
+    font-size: 14px;
+}
