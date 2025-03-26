@@ -12,14 +12,11 @@
 <body>
     <div class="container text-center">
         <h2 class="mb-4" style="color: white;">Nhóm 4 - Sáng thứ 4 - Demo Video Call With API</h2>
-        <div id="roomLinkContainer" class="mt-3">
-            <strong style="color: white;">Link phòng:</strong> <a id="roomLink" href="#" target="_blank">(sẽ hiển thị
-                sau khi tạo)</a>
-        </div>
-        <!-- Nút tham gia cuộc gọi -->
+
+
         <button id="joinBtn" class="btn btn-secondary btn-lg">Tham gia Phòng</button>
 
-        <!-- Video Container -->
+
         <div class="card video-card mt-4 shadow-lg">
             <div class="card-body">
                 <h5 class="card-title"></h5>
@@ -28,43 +25,13 @@
         </div>
     </div>
 
-    <!-- Daily API -->
     <script src="https://unpkg.com/@daily-co/daily-js"></script>
 
     <script>
-        const DAILY_API_KEY = "45af23764bb0a0bc2862807b33cc3ec50364e87344baf73d02f38828a6e9ff7d";  // Thay bằng API Key của bạn
-        const ROOM_CREATE_URL = "https://api.daily.co/v1/rooms";
-        let roomUrl = localStorage.getItem("daily_room_url");
-        async function createOrGetRoom() {
-            if (!roomUrl) {
-                const response = await fetch(ROOM_CREATE_URL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${DAILY_API_KEY}`
-                    },
-                    body: JSON.stringify({
-                        name: `room-${Math.floor(Math.random() * 10000)}`,
-                        properties: { enable_chat: true, enable_knocking: true }
-                    })
-                });
-
-                const data = await response.json();
-                roomUrl = data.url;
-                localStorage.setItem("daily_room_url", roomUrl);
-            }
-
-            // Hiển thị link phòng
-            document.getElementById("roomLink").href = roomUrl;
-            document.getElementById("roomLink").textContent = roomUrl;
-
-            return roomUrl;
-        }
-
+        const roomUrl = "https://khaideptrai.daily.co/Talky";
 
         async function requestPermissions() {
             try {
-                // Dùng getUserMedia để yêu cầu quyền camera và micro
                 await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 console.log("Đã cấp quyền camera & micro");
                 return true;
@@ -80,7 +47,6 @@
             const hasPermission = await requestPermissions();
             if (!hasPermission) return;
 
-            const roomUrl = await createOrGetRoom();
             console.log("Tham gia phòng:", roomUrl);
 
             callFrame = window.DailyIframe.createFrame(document.getElementById("videoContainer"), {
@@ -90,9 +56,9 @@
 
             callFrame.join({ url: roomUrl });
         });
+
     </script>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
