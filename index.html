@@ -40,6 +40,10 @@
     <script>
         const roomUrl = "https://khaideptrai.daily.co/Talky";
 
+        function getUserName() {
+            const user = JSON.parse(localStorage.getItem("google_user"));
+            return user ? user.name : "Khách";
+        }
         async function requestPermissions() {
             try {
                 await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -57,6 +61,8 @@
             const hasPermission = await requestPermissions();
             if (!hasPermission) return;
 
+            const userName = getUserName();
+            console.log("Tên người dùng:", userName);
             console.log("Tham gia phòng:", roomUrl);
 
             callFrame = window.DailyIframe.createFrame(document.getElementById("videoContainer"), {
@@ -64,7 +70,10 @@
                 iframeStyle: { width: "100%", height: "500px", borderRadius: "10px" }
             });
 
-            callFrame.join({ url: roomUrl });
+            callFrame.join({
+                url: roomUrl,
+                userName: userName
+            });
         });
 
     </script>
